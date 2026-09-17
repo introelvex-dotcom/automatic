@@ -1,27 +1,51 @@
-function verificarPin() {
-    const pinCorrecto = "1234"; // Cambia este PIN por el que uses
-    const ingreso = document.getElementById("pinInput").value;
-    const mensaje = document.getElementById("mensaje");
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Desbloquear Puerta</title>
+    <style>
+        body { background: #00bcd4; font-family: Arial, sans-serif; text-align: center; padding-top: 50px; color: white; }
+        .box { background: white; color: #333; display: inline-block; padding: 30px; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); }
+        input, button { padding: 10px; font-size: 18px; margin-top: 10px; width: 100%; border-radius: 5px; border: 1px solid #ccc; }
+        button { background: #ff4081; color: white; border: none; cursor: pointer; }
+        button:hover { background: #e91e63; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Control de Acceso B&B</h2>
+        <p>Ingrese su PIN asignado</p>
+        <input type="password" id="pinInput" placeholder="PIN secreto">
+        <button onclick="verificarPin()">ACCEDER</button>
+        <p id="mensaje" style="margin-top:15px; font-weight:bold;"></p>
+    </div>
 
-    if(ingreso === pinCorrecto) {
-        mensaje.style.color = "green";
-        mensaje.innerText = "¡PIN correcto! Abriendo puerta...";
-        
-        // AQUÍ ES CLAVE: Reemplaza con tu URL exacta de IFTTT
-        const urlIfttt = 'https://maker.ifttt.com/trigger/bot%C3%B3n_/with/key/d1PDkpOOCwk8wCSHVvb1mH';
+    <script>
+        function verificarPin() {
+            const pinCorrecto = "1234"; // Cambia este PIN por el que desees
+            const ingreso = document.getElementById("pinInput").value;
+            const mensaje = document.getElementById("mensaje");
 
-        // Enviamos la petición a IFTTT sin esperar respuesta estricta (no-cors previene bloqueos del navegador)
-        fetch(urlIfttt, {
-            method: 'POST',
-            mode: 'no-cors'
-        }).then(() => {
-            console.log("Señal enviada a IFTTT");
-        }).catch(error => {
-            console.error("Error de conexión", error);
-        });
+            if(ingreso === pinCorrecto) {
+                mensaje.style.color = "green";
+                mensaje.innerText = "¡Abriendo puerta!";
+                
+                // Petición Webhook a IFTTT para activar el Sonoff
+                fetch('https://maker.ifttt.com/trigger/bot%C3%B3n_/with/key/d1PDkpOOCwk8wCSHVvb1mH', {
+                    method: 'POST',
+                }).then(response => {
+                    if(response.ok) {
+                        console.log("Señal enviada con éxito");
+                    }
+                }).catch(error => {
+                    console.error("Error al conectar", error);
+                });
 
-    } else {
-        mensaje.style.color = "red";
-        mensaje.innerText = "PIN Incorrecto. Intente de nuevo.";
-    }
-}
+            } else {
+                mensaje.style.color = "red";
+                mensaje.innerText = "PIN Incorrecto";
+            }
+        }
+    </script>
+</body>
+</html>
